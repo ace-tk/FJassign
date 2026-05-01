@@ -1,101 +1,80 @@
-# Personal Finance Tracker – Backend
+# Personal Finance Tracker
 
-A clean, beginner-friendly REST API backend built with **Node.js**, **Express.js**, and **PostgreSQL**.
+A full-stack Personal Finance Tracker application built with Node.js, Express, PostgreSQL, and React.
 
----
+## Features Included
 
-## 📁 Folder Structure
+- **Stage 1 (Core):** Transaction and Category APIs with proper PostgreSQL relations.
+- **Stage 2 (Dashboard):** Aggregated financial insights (Total Income, Total Expense, Net Savings, Category Breakdown).
+- **Stage 3 (Reports & Budgets):** Budget limits vs actual spending tracking, and monthly report generation.
+- **Stage 4 (Advanced):** 
+  - Google OAuth integration setup
+  - Email Notifications via Nodemailer
+  - Receipt Uploads using Multer
+  - Multi-Currency support
+- **Stage 5 (Polish):** Secure with Helmet, CORS, and Express-Rate-Limit.
 
-```
-FJassign/
-├── server.js              ← Entry point, starts the server
-├── package.json
-├── .env                   ← Your environment variables (never commit this!)
-├── .env.example           ← Template showing what variables are needed
-├── database.sql           ← SQL to create the users table
-└── src/
-    ├── app.js             ← Express app, middleware & routes wired together
-    ├── config/
-    │   └── db.js          ← PostgreSQL connection pool
-    ├── controllers/
-    │   └── authController.js  ← Register & Login logic
-    ├── middleware/
-    │   └── authMiddleware.js  ← JWT verification (protect routes)
-    └── routes/
-        └── authRoutes.js  ← Maps URLs to controller functions
-```
+## Setup Instructions
 
----
-
-## ⚡ Quick Start
-
-### 1. Setup Environment
+### 1. Database Setup
+Make sure PostgreSQL is running.
+Create the database and apply the schema:
 ```bash
-cp .env.example .env
-# Then edit .env with your actual database credentials
+createdb finance_tracker
+psql -d finance_tracker -f database.sql
 ```
 
-### 2. Create the Database
-```sql
--- In psql or pgAdmin:
-CREATE DATABASE finance_tracker;
--- Then run database.sql to create the users table
+### 2. Environment Variables
+Create a `.env` file in the root directory:
+```env
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=finance_tracker
+DB_USER=your_postgres_username
+DB_PASSWORD=your_postgres_password
+JWT_SECRET=super_secret_string
+PORT=3000
+GOOGLE_CLIENT_ID=optional_client_id
 ```
 
-### 3. Run the Server
+### 3. Running the Backend
 ```bash
-npm run dev     # Development (auto-restarts on file changes)
-npm start       # Production
+npm install
+npm start
 ```
+The API server will run on `http://localhost:3000`.
 
----
-
-## 📡 API Endpoints
-
-### Register — `POST /api/auth/register`
-```json
-// Request Body
-{
-  "name": "John Doe",
-  "email": "john@example.com",
-  "password": "secret123"
-}
-
-// Success Response (201)
-{
-  "message": "Registration successful!",
-  "user": {
-    "id": 1,
-    "name": "John Doe",
-    "email": "john@example.com",
-    "created_at": "2026-05-01T05:00:00.000Z"
-  }
-}
+### 4. Running the Frontend
+```bash
+cd client
+npm install
+npm run dev
 ```
+The React frontend will be available at `http://localhost:5173`.
 
-### Login — `POST /api/auth/login`
-```json
-// Request Body
-{
-  "email": "john@example.com",
-  "password": "secret123"
-}
+## API Endpoints
 
-// Success Response (200)
-{
-  "message": "Login successful!",
-  "token": "eyJhbGciOiJIUzI1NiIs...",
-  "user": {
-    "id": 1,
-    "name": "John Doe",
-    "email": "john@example.com",
-    "created_at": "2026-05-01T05:00:00.000Z"
-  }
-}
-```
+### Authentication
+- `POST /api/auth/register` - Register a new user
+- `POST /api/auth/login` - Login and get JWT token
+- `POST /api/auth/google` - Login using Google ID token
 
-### Using Protected Routes
-Add the token to your request header:
-```
-Authorization: Bearer eyJhbGciOiJIUzI1NiIs...
-```
+### Categories
+- `POST /api/categories` - Create a new category
+- `GET /api/categories` - List user's categories
+- `DELETE /api/categories/:id` - Delete a category
+
+### Transactions
+- `POST /api/transactions` - Add a transaction (supports `receipt` file upload)
+- `GET /api/transactions` - List all transactions
+- `PUT /api/transactions/:id` - Edit a transaction
+- `DELETE /api/transactions/:id` - Delete a transaction
+
+### Insights & Budgets
+- `GET /api/dashboard` - Get aggregated totals and breakdown
+- `POST /api/budgets` - Set a monthly budget limit
+- `GET /api/budgets` - Compare budget limit vs actual spent
+- `GET /api/reports/monthly` - Month-over-month income vs expense
+
+## Deployment
+This backend is designed to be easily deployed on **Render**. Simply connect your GitHub repository, define the environment variables, and use `npm start` as the build command.

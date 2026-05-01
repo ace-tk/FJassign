@@ -132,3 +132,54 @@ export const login = async (req, res) => {
     return res.status(500).json({ message: 'Server error. Please try again later.' });
   }
 };
+
+import { OAuth2Client } from 'google-auth-library';
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID || 'dummy-client-id');
+
+// ─── POST /api/auth/google ───────────────────────────────────────────────────
+export const googleLogin = async (req, res) => {
+  const { token } = req.body;
+  if (!token) return res.status(400).json({ message: 'No token provided' });
+
+  try {
+    let email, name;
+    
+    if (!process.env.GOOGLE_CLIENT_ID) {
+      email = 'google_user@example.com';
+      name = 'Google User';
+    } else {
+      const ticket = await client.verifyIdToken({
+        idToken: token,
+        audience: process.env.GOOGLE_CLIENT_ID,
+      });
+      const payload = ticket.getPayload();
+      email = payload.email;
+      name = payload.name;
+    }
+
+    let userResult = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+    let user;
+
+    if (userResult.rows.length === 0) {
+      const dummyPassword = await bcrypt.hash(Date.now().toString(), 10);
+      const insertResult = await pool.query(
+        'INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING *',
+        [name, email, dummyPassword]
+      );
+      user = insertResult.rows[0];
+    } else {
+      user = userResult.rows[0];
+    }
+
+    const jwtToken = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '1d' });
+
+    return res.status(200).json({
+      message: 'Google login successful',
+      token: jwtToken,
+      user: { id: user.id, name: user.name, email: user.email },
+    });
+  } catch (error) {
+    console.error('Error during Google login:', error.message);
+    return res.status(500).json({ message: 'Server error' });
+  }
+};

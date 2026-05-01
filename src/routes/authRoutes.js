@@ -5,7 +5,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import express            from 'express';
-import { register, login } from '../controllers/authController.js';
+import { register, login, googleLogin } from '../controllers/authController.js';
 
 const router = express.Router(); // Create a mini Express app (a "router")
 
@@ -14,5 +14,8 @@ router.post('/register', register);
 
 // POST /api/auth/login → handled by the `login` function
 router.post('/login', login);
+
+// POST /api/auth/google
+router.post('/google', googleLogin);
 
 export default router;
