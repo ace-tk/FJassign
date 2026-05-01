@@ -1,3 +1,6 @@
+# ─── Antigravity (AI assistant internal folder) ────────
+.sixth/
+
 # ─── Environment Variables ─────────────────────────────
 # Never commit your real credentials!
 .env
