@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Register — Finance Tracker</title>
+</head>
+<body>
+
+  <h2>Create Account</h2>
+
+  <!-- Registration Form -->
+  <form id="registerForm">
+    <div>
+      <label>Name:</label><br />
+      <input type="text" id="name" placeholder="John Doe" required />
+    </div>
+    <br />
+    <div>
+      <label>Email:</label><br />
+      <input type="email" id="email" placeholder="john@example.com" required />
+    </div>
+    <br />
+    <div>
+      <label>Password (min 6 characters):</label><br />
+      <input type="password" id="password" placeholder="secret123" required />
+    </div>
+    <br />
+    <button type="submit">Register</button>
+  </form>
+
+  <!-- This paragraph shows success or error messages -->
+  <p id="message"></p>
+
+  <p>Already have an account? <a href="/login.html">Login here</a></p>
+
+  <script>
+    // Grab the form element
+    const form = document.getElementById('registerForm');
+    const message = document.getElementById('message');
+
+    // Listen for form submit
+    form.addEventListener('submit', async (event) => {
+      // Prevent the page from refreshing (default form behavior)
+      event.preventDefault();
+
+      // Step 1: Read values from the input fields
+      const name     = document.getElementById('name').value;
+      const email    = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      // Step 2: Basic frontend check — password length
+      if (password.length < 6) {
+        message.textContent = '❌ Password must be at least 6 characters.';
+        return;
+      }
+
+      try {
+        // Step 3: Send a POST request to the register API
+        const response = await fetch('/api/auth/register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json', // Tell server we're sending JSON
+          },
+          body: JSON.stringify({ name, email, password }), // Convert object to JSON string
+        });
+
+        // Step 4: Parse the JSON response from the server
+        const data = await response.json();
+
+        if (response.ok) {
+          // response.ok is true for status codes 200-299
+          message.textContent = '✅ Registered successfully! Redirecting to login...';
+          console.log('Registration success:', data);
+
+          // Step 5: Redirect to login page after 1.5 seconds
+          setTimeout(() => {
+            window.location.href = '/login.html';
+          }, 1500);
+
+        } else {
+          // Server returned an error (e.g. duplicate email)
+          message.textContent = '❌ ' + data.message;
+          console.error('Registration failed:', data);
+        }
+
+      } catch (error) {
+        // Network error (server not running, etc.)
+        message.textContent = '❌ Could not connect to the server. Is it running?';
+        console.error('Network error:', error);
+      }
+    });
+  </script>
+
+</body>
+</html>
