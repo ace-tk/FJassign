@@ -55,20 +55,19 @@ app.use('/api/budgets', budgetRoutes);
 app.use('/api/reports', reportRoutes);
 
 // ─── Root API Health Check ────────────────────────────────────────────────────
+// This ensures that visiting the root URL (/) shows the API is alive.
+app.get('/', (req, res) => {
+  res.send('API is running');
+});
+
+// Also keep the /api health check just in case
 app.get('/api', (req, res) => {
   res.json({ message: 'Personal Finance Tracker API is running!' });
 });
 
 // ─── 404 Handler for API routes ──────────────────────────────────────────────
-app.use('/api', (req, res) => {
-  res.status(404).json({ message: 'API route not found.' });
-});
-
-// ─── Production Frontend Serving ─────────────────────────────────────────────
-// If deployed, serve the built React app from client/dist
-app.use(express.static(path.join(__dirname, 'client/dist')));
 app.use((req, res) => {
-  res.sendFile(path.join(__dirname, 'client/dist/index.html'));
+  res.status(404).json({ message: 'API route not found.' });
 });
 
 // Export the app (server.js will import this and call app.listen)
