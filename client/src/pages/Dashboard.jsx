@@ -3,6 +3,8 @@ import { AuthContext } from '../context/AuthContext';
 import { LogOut, LayoutDashboard, TrendingUp, Bell } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
+const API_BASE = "https://fjassign.onrender.com";
+
 const Dashboard = () => {
   const { user, token, logout } = useContext(AuthContext);
   
@@ -14,8 +16,8 @@ const Dashboard = () => {
     const fetchData = async () => {
       try {
         const [dashRes, budgetRes] = await Promise.all([
-          fetch('/api/dashboard', { headers: { 'Authorization': `Bearer ${token}` } }),
-          fetch('/api/budgets', { headers: { 'Authorization': `Bearer ${token}` } })
+          fetch(`${API_BASE}/api/dashboard`, { headers: { 'Authorization': `Bearer ${token}` } }),
+          fetch(`${API_BASE}/api/budgets`, { headers: { 'Authorization': `Bearer ${token}` } })
         ]);
 
         if (dashRes.ok && budgetRes.ok) {

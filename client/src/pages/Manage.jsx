@@ -3,6 +3,8 @@ import { AuthContext } from '../context/AuthContext';
 import { LogOut, LayoutDashboard, Database } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
+const API_BASE = "https://fjassign.onrender.com";
+
 const Manage = () => {
   const { user, token, logout } = useContext(AuthContext);
   
@@ -30,7 +32,7 @@ const Manage = () => {
   // Fetch categories on load
   const fetchCategories = async () => {
     try {
-      const res = await fetch('/api/categories', { headers: { 'Authorization': `Bearer ${token}` } });
+      const res = await fetch(`${API_BASE}/api/categories`, { headers: { 'Authorization': `Bearer ${token}` } });
       if (res.ok) {
         const data = await res.json();
         setCategories(data.categories || []);
@@ -53,7 +55,7 @@ const Manage = () => {
 
   const handleAddCategory = async (e) => {
     e.preventDefault();
-    const res = await fetch('/api/categories', {
+    const res = await fetch(`${API_BASE}/api/categories`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
       body: JSON.stringify({ name: catName, type: catType })
@@ -78,7 +80,7 @@ const Manage = () => {
     formData.append('currency', txCurrency);
     if (receiptFile) formData.append('receipt', receiptFile);
 
-    const res = await fetch('/api/transactions', {
+    const res = await fetch(`${API_BASE}/api/transactions`, {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${token}` },
       body: formData // No content-type header, fetch sets it automatically for FormData
@@ -92,7 +94,7 @@ const Manage = () => {
 
   const handleAddBudget = async (e) => {
     e.preventDefault();
-    const res = await fetch('/api/budgets', {
+    const res = await fetch(`${API_BASE}/api/budgets`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
       body: JSON.stringify({ category_id: budCatId, limit_amount: budLimit, month: budMonth })

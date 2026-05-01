@@ -3,6 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { Loader2 } from 'lucide-react';
 
+const API_BASE = "https://fjassign.onrender.com";
+
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -18,7 +20,7 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const response = await fetch('/api/auth/login', {
+      const response = await fetch(`${API_BASE}/api/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -43,7 +45,7 @@ const Login = () => {
 
   const handleGoogleLogin = async () => {
       try {
-        const response = await fetch('/api/auth/google', {
+        const response = await fetch(`${API_BASE}/api/auth/google`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ token: 'dummy_google_token_for_testing' }),
